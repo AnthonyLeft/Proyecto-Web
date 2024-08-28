@@ -1,3 +1,5 @@
+Anthony Jair Izquierdo Zurita
+
 Gestión de Libros y Autores
 
 Este proyecto es una aplicación web desarrollada en PHP utilizando el patrón de arquitectura Modelo-Vista-Controlador (MVC).
@@ -30,14 +32,7 @@ Vistas/libros.html: Página de gestión de libros.
 index.php: Router y punto de entrada principal.
 Requisitos Previos:
 
-Antes de ejecutar este proyecto, asegúrate de tener instalado:
-
-XAMPP/WAMP/LAMP: Un servidor web que incluya Apache, PHP y MySQL.
-MySQL: Base de datos para almacenar la información de libros y autores.
-Git: Para clonar el repositorio y gestionar el control de versiones.
-Instalación:
-
-Sigue los siguientes pasos para configurar y ejecutar el proyecto:
+Para configurar y ejecutar el proyecto se debe realiza lo siguiente:
 
 Clonar el repositorio:
 
