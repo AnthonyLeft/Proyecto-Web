@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Autores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #485563, #29323c);
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            margin-top: 50px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .btn-success {
+            background-color: #43cea2;
+            border: none;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+        }
+        .btn-success:hover {
+            background-color: #185a9d;
+        }
+        .btn-back {
+            background-color: #3a3d98;
+            border: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn-back:hover {
+            background-color: #6a6ff8;
+        }
+        .list-group-item {
+            background-color: rgba(0, 0, 0, 0.6);
+            border: none;
+            color: #fff;
+            margin-bottom: 10px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .btn-warning {
+            background-color: #ffcc00;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .btn-warning:hover {
+            background-color: #ffd700;
+        }
+        .btn-danger {
+            background-color: #ff4e50;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .btn-danger:hover {
+            background-color: #ff6f69;
+        }
+        .modal-content {
+            background-color: #29323c;
+            color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid #ccc;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-color: #43cea2;
+        }
+        .btn-primary {
+            background-color: #3a3d98;
+            border: none;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #6a6ff8;
+        }
+        .btn-close {
+            background-color: #ff4e50;
+            border: none;
+            border-radius: 50%;
+            padding: 5px 10px;
+            transition: background-color 0.3s;
+        }
+        .btn-close:hover {
+            background-color: #ff6f69;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn btn-back">Volver al Inicio</a>
+        <h1 class="text-center">Gestión de Autores</h1>
+        <button class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#modalAutor">Nuevo Autor</button>
+        
+        <ul id="listaAutores" class="list-group">
+            <!-- Lista de autores se llenará aquí -->
+        </ul>
+    </div>
+
+    <!-- Modal para creación/edición -->
+    <div class="modal fade" id="modalAutor" tabindex="-1" aria-labelledby="modalAutorLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAutorLabel">Nuevo Autor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAutor">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" id="nombre" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="biografia" class="form-label">Biografía</label>
+                            <textarea id="biografia" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <input type="hidden" id="autor_id">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('formAutor').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const autorId = document.getElementById('autor_id').value;
+            const url = autorId ? `/Examen/autor/${autorId}` : '/Examen/autor/crear';
+            const method = autorId ? 'put' : 'post';
+            
+            axios({
+                method: method,
+                url: url,
+                data: {
+                    nombre: document.getElementById('nombre').value,
+                    biografia: document.getElementById('biografia').value
+                }
+            })
+            .then(response => {
+                alert(response.data.mensaje);
+                resetForm();
+                cargarAutores();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function cargarAutores() {
+            axios.get('/Examen/autor/listar')
+            .then(response => {
+                const lista = document.getElementById('listaAutores');
+                lista.innerHTML = '';
+                response.data.forEach(autor => {
+                    const li = document.createElement('li');
+                    li.className = "list-group-item d-flex justify-content-between align-items-center";
+                    li.innerHTML = `
+                        <span>${autor.nombre}</span>
+                        <div>
+                            <button class="btn btn-warning btn-sm me-2" onclick="editarAutor(${autor.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarAutor(${autor.id})">Eliminar</button>
+                        </div>
+                    `;
+                    lista.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function editarAutor(id) {
+            axios.get(`/Examen/autor/${id}`)
+            .then(response => {
+                const autor = response.data;
+                document.getElementById('autor_id').value = autor.id;
+                document.getElementById('nombre').value = autor.nombre;
+                document.getElementById('biografia').value = autor.biografia;
+                document.getElementById('modalAutorLabel').textContent = 'Editar Autor';
+                new bootstrap.Modal(document.getElementById('modalAutor')).show();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function eliminarAutor(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este autor?')) {
+                axios.delete(`/Examen/autor/${id}`)
+                .then(response => {
+                    alert(response.data.mensaje);
+                    cargarAutores();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('autor_id').value = '';
+            document.getElementById('formAutor').reset();
+            document.getElementById('modalAutorLabel').textContent = 'Nuevo Autor';
+        }
+
+        cargarAutores();  // Cargar autores al iniciar la página
+    </script>
+</body>
+</html>
